@@ -1,0 +1,53 @@
+From db4bb04598507d82943aa86b9b02cf8e9559dcc5 Mon Sep 17 00:00:00 2001
+From: Kristof Bach <crys@crys.hu>
+Date: Fri, 12 Feb 2021 19:55:03 +0100
+Subject: [PATCH] Default to sequential downloading
+
+---
+ src/webui/api/torrentscontroller.cpp | 2 +-
+ src/webui/www/private/download.html  | 2 +-
+ src/webui/www/private/upload.html    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/webui/api/torrentscontroller.cpp b/src/webui/api/torrentscontroller.cpp
+index 45edc13e1..ec1d31f9c 100644
+--- a/src/webui/api/torrentscontroller.cpp
++++ b/src/webui/api/torrentscontroller.cpp
+@@ -606,7 +606,7 @@ void TorrentsController::addAction()
+     const QString cookie = params()["cookie"];
+ 
+     const bool skipChecking = parseBool(params()["skip_checking"]).value_or(false);
+-    const bool seqDownload = parseBool(params()["sequentialDownload"]).value_or(false);
++    const bool seqDownload = parseBool(params()["sequentialDownload"]).value_or(true);
+     const bool firstLastPiece = parseBool(params()["firstLastPiecePrio"]).value_or(false);
+     const std::optional<bool> addPaused = parseBool(params()["paused"]);
+     const QString savepath = params()["savepath"].trimmed();
+diff --git a/src/webui/www/private/download.html b/src/webui/www/private/download.html
+index b7a4a50a5..21cca3e35 100644
+--- a/src/webui/www/private/download.html
++++ b/src/webui/www/private/download.html
+@@ -104,7 +104,7 @@
+                             <label for="sequentialDownload">QBT_TR(Download in sequential order)QBT_TR[CONTEXT=TransferListWidget]</label>
+                         </td>
+                         <td>
+-                            <input type="checkbox" id="sequentialDownload" name="sequentialDownload" value="true" />
++                            <input type="checkbox" id="sequentialDownload" name="sequentialDownload" value="true" checked />
+                         </td>
+                     </tr>
+                     <tr>
+diff --git a/src/webui/www/private/upload.html b/src/webui/www/private/upload.html
+index 9e8849cbe..bd474b7f3 100644
+--- a/src/webui/www/private/upload.html
++++ b/src/webui/www/private/upload.html
+@@ -92,7 +92,7 @@
+                         <label for="sequentialDownload">QBT_TR(Download in sequential order)QBT_TR[CONTEXT=TransferListWidget]</label>
+                     </td>
+                     <td>
+-                        <input type="checkbox" id="sequentialDownload" name="sequentialDownload" value="true" />
++                        <input type="checkbox" id="sequentialDownload" name="sequentialDownload" value="true" checked />
+                     </td>
+                 </tr>
+                 <tr>
+-- 
+2.25.1
+

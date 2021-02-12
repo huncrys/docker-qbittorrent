@@ -13,6 +13,8 @@ ENV HOME="/config" \
 XDG_CONFIG_HOME="/config" \
 XDG_DATA_HOME="/config"
 
+COPY patches/ /tmp/patches/
+
 # add repo and install qbitorrent
 RUN \
   echo "***** add qbitorrent repositories ****" && \
@@ -34,11 +36,28 @@ RUN \
   apt-get install -y \
     p7zip-full \
     qbittorrent-cli \
-    qbittorrent-nox=${QBITTORRENT_VERSION} \
     unrar \
     geoip-bin \
-    unzip && \
+    unzip \
+    devscripts \
+    git \
+    equivs && \
+  mkdir -p /tmp/build && \
+  cd /tmp/build && \
+  apt-get source qbittorrent=${QBITTORRENT_VERSION} && \
+  cd qbittorrent* && \
+  git apply /tmp/patches/*.patch && \
+  yes | mk-build-deps -i && \
+  cd /tmp/build/qbittorrent* && \
+  DEB_BUILD_OPTIONS=nocheck debuild -b -us -uc && \
+  apt-get install -y /tmp/build/qbittorrent-nox*.deb && \
   echo "**** cleanup ****" && \
+  apt-get purge -y \
+    devscripts \
+    git \
+    equivs \
+    qbittorrent-build-deps && \
+  apt-get autoremove --purge -y && \
   apt-get clean && \
   rm -rf \
     /tmp/* \
